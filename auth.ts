@@ -1,0 +1,72 @@
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Credentials({
+      authorize: async (credentials) => {
+        if (!credentials) return null;
+
+        const user =
+          typeof credentials.data === "string"
+            ? JSON.parse(credentials.data)
+            : credentials.data;
+
+        if (!user) return null;
+
+        return {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          profileImage: user.profileImage,
+          verified: user.verified,
+          accessToken: user.accessToken,
+        };
+      },
+    }),
+  ],
+  pages: {
+    signIn: "/login",
+    signOut: "/login",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = {
+          id: user.id!,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          profileImage: user.profileImage,
+          verified: user.verified,
+          accessToken: user.accessToken,
+        };
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (token.user) {
+        session.user = {
+          ...session.user,
+          id: token.user.id,
+          firstName: token.user.firstName,
+          lastName: token.user.lastName,
+          email: token.user.email,
+          role: token.user.role,
+          profileImage: token.user.profileImage,
+          verified: token.user.verified,
+          accessToken: token.user.accessToken,
+        };
+      }
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
+});

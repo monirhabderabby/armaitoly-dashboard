@@ -6,7 +6,7 @@ interface Props {
 
 const Layout = ({ children }: Props) => {
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       {children}
     </div>
   );
