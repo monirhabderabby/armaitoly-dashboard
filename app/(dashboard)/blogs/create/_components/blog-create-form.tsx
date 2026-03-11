@@ -27,7 +27,10 @@ import {
 } from "@/components/ui/select";
 import { TagsInput } from "@/components/ui/tags-input";
 import { useCreateBlog } from "@/hooks/blogs/use-create-blog";
+import { useUpdateBlog } from "@/hooks/blogs/use-update-blog";
+import { Blog } from "@/types/blogs";
 import { Session } from "next-auth";
+import { useRouter } from "nextjs-toploader/app";
 import { ThumbnailUploader } from "./thumbnail-uploader";
 
 /* ---------------- Schema ---------------- */
@@ -44,8 +47,12 @@ export const blogSchema = z.object({
     ),
   tags: z.array(z.string().min(1)).min(1, "Please add at least one tag"),
 });
+export const blogEditSchema = blogSchema.extend({
+  thumbnail: z.custom<File | null>().optional(),
+});
 
 export type BlogValues = z.infer<typeof blogSchema>;
+export type BlogEditValues = z.infer<typeof blogEditSchema>;
 
 /* ---------------- Locations ---------------- */
 
@@ -64,45 +71,80 @@ const locations = [
 
 interface Props {
   cu: Session["user"];
+  initianData?: Blog;
 }
 
-export default function BlogCreateForm({ cu }: Props) {
-  const { mutate: createBlog, isPending } = useCreateBlog({
+export default function BlogCreateForm({ cu, initianData }: Props) {
+  const isEditMode = !!initianData;
+
+  const router = useRouter();
+
+  const { mutate: createBlog, isPending: isCreating } = useCreateBlog({
     accessToken: cu.accessToken ?? "",
   });
 
-  const form = useForm<BlogValues>({
-    resolver: zodResolver(blogSchema),
+  const { mutate: updateBlog, isPending: isUpdating } = useUpdateBlog({
+    accessToken: cu.accessToken,
+    id: initianData?._id ?? "",
+  });
+
+  const isPending = isCreating || isUpdating;
+
+  const form = useForm<BlogEditValues>({
+    resolver: zodResolver(isEditMode ? blogEditSchema : blogSchema),
     defaultValues: {
-      title: "",
-      location: "",
+      title: initianData?.title ?? "",
+      location: initianData?.location ?? "",
       thumbnail: undefined as unknown as File,
-      content: "",
-      tags: [],
+      tags: initianData?.tags ?? [],
+      content: initianData?.content ?? "",
     },
     mode: "onChange",
   });
 
-  const onSubmit = (data: BlogValues) => {
-    createBlog(
-      {
-        title: data.title,
-        location: data.location,
-        content: data.content,
-        tags: data.tags,
-        coverImage: data.thumbnail as File,
-        isPublished: true,
-      },
-      {
-        onSuccess: (res) => {
-          toast.success(res.message);
-          form.reset();
+  const onSubmit = (data: BlogEditValues) => {
+    if (isEditMode) {
+      updateBlog(
+        {
+          title: data.title,
+          location: data.location,
+          content: data.content,
+          tags: data.tags,
+          ...(data.thumbnail instanceof File && { coverImage: data.thumbnail }),
+          isPublished: true,
         },
-        onError: (err) => {
-          toast.error(err.message);
+        {
+          onSuccess: (res) => {
+            toast.success(res.message);
+            router.push("/blogs");
+          },
+          onError: (err) => {
+            toast.error(err.message);
+          },
         },
-      },
-    );
+      );
+    } else {
+      createBlog(
+        {
+          title: data.title,
+          location: data.location,
+          content: data.content,
+          tags: data.tags,
+          coverImage: data.thumbnail as File,
+          isPublished: true,
+        },
+        {
+          onSuccess: (res) => {
+            toast.success(res.message);
+            form.reset();
+            router.push("/blogs");
+          },
+          onError: (err) => {
+            toast.error(err.message);
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -193,8 +235,11 @@ export default function BlogCreateForm({ cu }: Props) {
                   </FormLabel>
                   <FormControl>
                     <ThumbnailUploader
-                      value={field.value}
+                      value={field.value ?? null}
                       onChange={field.onChange}
+                      existingUrl={
+                        isEditMode ? initianData?.coverImage : undefined
+                      }
                     />
                   </FormControl>
                   <FormMessage className="text-xs font-normal" />

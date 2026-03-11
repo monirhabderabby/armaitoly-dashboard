@@ -34,3 +34,10 @@ export interface BlogResponse {
   meta: BlogMeta;
   data: Blog[];
 }
+
+export interface SingleBlogResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: Blog;
+}
