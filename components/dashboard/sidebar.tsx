@@ -33,7 +33,7 @@ const navItems = [
     href: "/dashboard/messages",
     icon: MessageSquare,
   },
-  { label: "FAQ Management", href: "/dashboard/faq", icon: HelpCircle },
+  { label: "FAQ Management", href: "/faqs", icon: HelpCircle },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
