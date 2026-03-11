@@ -30,7 +30,7 @@ const navItems = [
   { label: "Blog Management", href: "/blogs", icon: BookOpen },
   {
     label: "Contact messages",
-    href: "/messages",
+    href: "/contacts",
     icon: MessageSquare,
   },
   { label: "FAQ Management", href: "/faqs", icon: HelpCircle },
