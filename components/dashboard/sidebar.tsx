@@ -21,7 +21,7 @@ const AlertModal = dynamic(() => import("@/components/ui/custom/alert-modal"), {
 });
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/", icon: LayoutDashboard },
   {
     label: "Booking Management",
     href: "/dashboard/bookings",
@@ -30,11 +30,11 @@ const navItems = [
   { label: "Blog Management", href: "/blogs", icon: BookOpen },
   {
     label: "Contact messages",
-    href: "/dashboard/messages",
+    href: "/messages",
     icon: MessageSquare,
   },
   { label: "FAQ Management", href: "/faqs", icon: HelpCircle },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
