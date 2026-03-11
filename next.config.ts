@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         hostname: "avatar.iran.liara.run",
         protocol: "https",
       },
+      {
+        hostname: "res.cloudinary.com",
+        protocol: "https",
+      },
     ],
   },
 };

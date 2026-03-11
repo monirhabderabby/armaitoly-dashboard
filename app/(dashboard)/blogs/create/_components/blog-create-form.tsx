@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TagsInput } from "@/components/ui/tags-input";
-import { useCreateBlog } from "@/hooks/use-create-blog";
+import { useCreateBlog } from "@/hooks/blogs/use-create-blog";
 import { Session } from "next-auth";
 import { ThumbnailUploader } from "./thumbnail-uploader";
 
