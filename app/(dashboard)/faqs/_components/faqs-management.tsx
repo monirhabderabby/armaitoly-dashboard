@@ -214,9 +214,13 @@ export const FaqsPage = ({ cu }: Props) => {
                 {/* Expanded answer */}
                 {isOpen && (
                   <div className="px-5 pb-4 border-t border-gray-50">
-                    <p className="text-sm text-gray-500 mt-3 leading-relaxed">
-                      {faq.answer}
-                    </p>
+                    <div
+                      className="prose prose-sm max-w-none text-gray-500 mt-3 
+    prose-ul:list-disc prose-ul:pl-5 
+    prose-ol:list-decimal prose-ol:pl-5
+    prose-li:my-0.5"
+                      dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    />
                   </div>
                 )}
               </div>

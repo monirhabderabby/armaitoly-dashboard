@@ -24,7 +24,7 @@ const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   {
     label: "Booking Management",
-    href: "/dashboard/bookings",
+    href: "/bookings",
     icon: CalendarCheck,
   },
   { label: "Blog Management", href: "/blogs", icon: BookOpen },

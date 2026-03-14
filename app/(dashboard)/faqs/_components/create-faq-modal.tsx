@@ -1,5 +1,7 @@
 "use client";
 
+import { RichTextEditor } from "@/components/shared/rich-text-editor/rich-text-editor";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import { FaQuestion } from "react-icons/fa";
@@ -35,6 +37,9 @@ function FaqFormContent({
     await onSubmit(form);
   };
 
+  // Strip HTML tags to check if answer is truly empty
+  const isAnswerEmpty = form.answer.replace(/<[^>]*>/g, "").trim() === "";
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
@@ -54,7 +59,7 @@ function FaqFormContent({
           </label>
           <input
             type="text"
-            placeholder="Savannah"
+            placeholder="Enter your question..."
             value={form.question}
             onChange={(e) =>
               setForm((prev) => ({ ...prev, question: e.target.value }))
@@ -68,15 +73,14 @@ function FaqFormContent({
             <MdOutlineQuestionAnswer className="text-gray-400" size={15} />
             Answer
           </label>
-          <textarea
-            placeholder="Write your answer here..."
-            value={form.answer}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, answer: e.target.value }))
-            }
-            rows={5}
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition resize-none"
-          />
+          <ScrollArea className="h-64">
+            <RichTextEditor
+              value={form.answer}
+              onChange={(value) =>
+                setForm((prev) => ({ ...prev, answer: value }))
+              }
+            />
+          </ScrollArea>
         </div>
 
         <div className="flex gap-3">
@@ -89,7 +93,7 @@ function FaqFormContent({
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isLoading || !form.question.trim() || !form.answer.trim()}
+            disabled={isLoading || !form.question.trim() || isAnswerEmpty}
             className="flex-1 flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <AiOutlineSave size={17} />
