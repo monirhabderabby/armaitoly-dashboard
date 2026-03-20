@@ -5,6 +5,7 @@ import {
   BookOpen,
   CalendarCheck,
   HelpCircle,
+  ImageUpscale,
   LayoutDashboard,
   LogOut,
   MessageSquare,
@@ -28,6 +29,7 @@ const navItems = [
     icon: CalendarCheck,
   },
   { label: "Blog Management", href: "/blogs", icon: BookOpen },
+  { label: "Assets", href: "/assets", icon: ImageUpscale },
   {
     label: "Contact messages",
     href: "/contacts",

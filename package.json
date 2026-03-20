@@ -29,6 +29,8 @@
     "@tiptap/extension-youtube": "^3.20.1",
     "@tiptap/react": "^3.20.1",
     "@tiptap/starter-kit": "^3.20.1",
+    "@uploadcare/react-uploader": "^1.13.0",
+    "@uploadcare/rest-client": "^6.18.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
