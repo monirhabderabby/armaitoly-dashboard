@@ -1,5 +1,6 @@
 "use client";
 
+import { useAddGallery } from "@/hooks/gallery/use-add-gallery-image";
 import type {
   OutputCollectionState,
   OutputFileEntry,
@@ -11,6 +12,7 @@ import { useRef } from "react";
 
 interface Props {
   roomId: string;
+  roomName: string;
 }
 
 // ── Calls your Next.js route handler (keeps secret key server-side) ──
@@ -29,7 +31,7 @@ function extractUuid(cdnUrl: string): string {
   return parts[parts.length - 1];
 }
 
-export default function RoomImageUploader({ roomId }: Props) {
+export default function RoomImageUploader({ roomId, roomName }: Props) {
   // Tracks UUIDs that are uploaded but not yet confirmed via Done
   // useRef so event callbacks always read the latest value without re-renders
   const pendingUuids = useRef<Set<string>>(new Set());
@@ -37,6 +39,8 @@ export default function RoomImageUploader({ roomId }: Props) {
 
   // Tracks whether Done was clicked in the current modal session
   const doneClicked = useRef(false);
+
+  const { mutate: addGallery } = useAddGallery();
 
   // ── Fires whenever upload state changes (files added, removed, uploaded) ──
   const handleUploadSuccess = (state: OutputCollectionState) => {
@@ -63,7 +67,21 @@ export default function RoomImageUploader({ roomId }: Props) {
 
     pendingUuids.current = new Set(); // clear — they're now confirmed
 
-    console.log(`[Room ${roomId}] ✅ Confirmed URLs:`, urls);
+    addGallery(
+      {
+        roomId: Number(roomId),
+        roomName,
+        images: urls,
+      },
+      {
+        onSuccess: () => {
+          uploaderApiRef.current?.getAPI().removeAllFiles();
+        },
+        onError: (err) => {
+          console.error("Failed to save gallery:", err);
+        },
+      },
+    );
 
     // 👉 Send `urls` to your Express server here
     // e.g. await fetch("https://your-api.com/rooms/photos", { method: "POST", body: JSON.stringify({ roomId, urls }) })
