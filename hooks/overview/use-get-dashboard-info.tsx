@@ -17,6 +17,7 @@ export interface EarningsOverview {
 }
 
 export interface BookingOverview {
+  weekly: BookingEntry[];
   monthly: BookingEntry[];
 }
 

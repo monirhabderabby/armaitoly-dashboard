@@ -1,6 +1,9 @@
 "use client";
 
-import { useGetDashboardInfo } from "@/hooks/overview/use-get-dashboard-info";
+import {
+  BookingEntry,
+  useGetDashboardInfo,
+} from "@/hooks/overview/use-get-dashboard-info";
 import { BookCheck, DollarSign } from "lucide-react";
 import { useState } from "react";
 import {
@@ -74,12 +77,27 @@ function ToggleGroup({
 /* ---------------- Custom Tooltip ---------------- */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CustomTooltip({ active, payload, label }: any) {
+function EarningsTooltip({ active, payload, label }: any) {
   if (active && payload?.length) {
     return (
       <div className="rounded-lg border border-gray-100 bg-white px-3 py-2 shadow-md text-xs">
         <p className="font-semibold text-[#23A4D2]">
           ${payload[0].value.toLocaleString()}
+        </p>
+        <p className="text-gray-400">{label}</p>
+      </div>
+    );
+  }
+  return null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function BookingTooltip({ active, payload, label }: any) {
+  if (active && payload?.length) {
+    return (
+      <div className="rounded-lg border border-gray-100 bg-white px-3 py-2 shadow-md text-xs">
+        <p className="font-semibold text-[#23A4D2]">
+          {payload[0].value.toLocaleString()} bookings
         </p>
         <p className="text-gray-400">{label}</p>
       </div>
@@ -121,27 +139,24 @@ export default function DashboardPage() {
   const dashboardData = data?.data;
 
   // Map API earnings data to chart format
-  const earningsData =
+  const earningsData = (
     earningsPeriod === "Weekly"
-      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (dashboardData?.earningsOverview.weekly ?? []).map((item: any) => ({
-          label: item.label,
-          value: item.revenue,
-        }))
-      : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (dashboardData?.earningsOverview.monthly ?? []).map((item: any) => ({
-          label: item.label,
-          value: item.revenue,
-        }));
+      ? (dashboardData?.earningsOverview.weekly ?? [])
+      : (dashboardData?.earningsOverview.monthly ?? [])
+  ).map((item) => ({
+    label: item.label,
+    value: item.revenue,
+  }));
 
-  // Map API booking data to chart format (only monthly available from API)
-  const bookingData = (dashboardData?.bookingOverview.monthly ?? []).map(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (item: any) => ({
-      label: item.label,
-      value: item.count,
-    }),
-  );
+  // Map API booking data to chart format
+  const bookingData = (
+    bookingPeriod === "Weekly"
+      ? (dashboardData?.bookingOverview.weekly ?? [])
+      : (dashboardData?.bookingOverview.monthly ?? [])
+  ).map((item: BookingEntry) => ({
+    label: item.label,
+    value: item.count,
+  }));
 
   // Format total revenue with currency
   const formattedRevenue = dashboardData
@@ -239,7 +254,7 @@ export default function DashboardPage() {
                 tickLine={false}
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<EarningsTooltip />} />
               <Area
                 type="monotone"
                 dataKey="value"
@@ -262,10 +277,9 @@ export default function DashboardPage() {
               Booking Overview
             </h2>
             <p className="mt-0.5 text-xs text-gray-400">
-              Monthly booking counts across the year.
+              Booking counts across the {bookingPeriod.toLowerCase()}.
             </p>
           </div>
-          {/* Booking toggle kept in UI; only monthly data available from API */}
           <ToggleGroup value={bookingPeriod} onChange={setBookingPeriod} />
         </div>
 
@@ -293,7 +307,7 @@ export default function DashboardPage() {
                 axisLine={false}
                 tickLine={false}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<BookingTooltip />} />
               <Bar
                 dataKey="value"
                 fill="#23A4D2"
