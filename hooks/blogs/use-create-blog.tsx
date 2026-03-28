@@ -12,6 +12,10 @@ export interface CreateBlogBody {
   coverImage: File;
   isPublished?: boolean;
   slug: string;
+  metaInfo: {
+    title: string;
+    description: string;
+  };
 }
 
 export type CreateBlogResponse = {
@@ -48,6 +52,7 @@ export function useCreateBlog({ accessToken }: UseCreateBlogOptions) {
           tags: body.tags,
           isPublished: body.isPublished ?? true,
           slug: body.slug,
+          metaInfo: body.metaInfo,
         }),
       );
 

@@ -19,6 +19,10 @@ export interface Blog {
   createdAt: string;
   updatedAt: string;
   __v: number;
+  metaInfo: {
+    title: string;
+    description: string;
+  };
 }
 
 export interface BlogMeta {

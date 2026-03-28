@@ -10,6 +10,10 @@ export interface UpdateBlogBody {
   tags: string[];
   coverImage?: File;
   isPublished?: boolean;
+  metaInfo: {
+    title: string;
+    description: string;
+  };
 }
 
 interface UseUpdateBlogOptions {
@@ -39,6 +43,7 @@ export function useUpdateBlog({ accessToken, id }: UseUpdateBlogOptions) {
           content: body.content,
           tags: body.tags,
           isPublished: body.isPublished ?? true,
+          metaInfo: body.metaInfo,
         }),
       );
 
