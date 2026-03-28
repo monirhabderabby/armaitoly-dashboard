@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export interface UpdateBlogBody {
   title: string;
+  slug: string;
   location: string;
   content: string;
   tags: string[];
@@ -33,6 +34,7 @@ export function useUpdateBlog({ accessToken, id }: UseUpdateBlogOptions) {
         "data",
         JSON.stringify({
           title: body.title,
+          slug: body.slug,
           location: body.location,
           content: body.content,
           tags: body.tags,

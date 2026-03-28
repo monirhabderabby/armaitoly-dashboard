@@ -135,6 +135,7 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
           tags: data.tags,
           ...(data.thumbnail instanceof File && { coverImage: data.thumbnail }),
           isPublished: true,
+          slug: data.slug,
         },
         {
           onSuccess: (res) => {
