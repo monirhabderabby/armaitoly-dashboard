@@ -8,6 +8,7 @@ export interface BlogAuthor {
 
 export interface Blog {
   _id: string;
+  slug: string;
   title: string;
   location: string;
   coverImage?: string;

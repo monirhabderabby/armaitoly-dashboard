@@ -102,7 +102,7 @@ export function BlogCard({ blog, cu }: Props) {
               </Button>
             </Link>
 
-            <Link href={`/blogs/edit/${blog._id}`}>
+            <Link href={`/blogs/edit/${blog.slug}`}>
               <button className="flex size-9 items-center justify-center rounded-lg border border-gray-200 text-[#23A4D2] hover:bg-sky-50 transition-colors cursor-pointer">
                 <Pencil className="size-3.5" />
               </button>

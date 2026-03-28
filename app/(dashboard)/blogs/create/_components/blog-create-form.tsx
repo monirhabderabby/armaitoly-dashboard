@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronRight, Loader2, Send } from "lucide-react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -31,6 +31,7 @@ import { useUpdateBlog } from "@/hooks/blogs/use-update-blog";
 import { Blog } from "@/types/blogs";
 import { Session } from "next-auth";
 import { useRouter } from "nextjs-toploader/app";
+import { useEffect } from "react";
 import { ThumbnailUploader } from "./thumbnail-uploader";
 
 /* ---------------- Schema ---------------- */
@@ -86,7 +87,7 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
 
   const { mutate: updateBlog, isPending: isUpdating } = useUpdateBlog({
     accessToken: cu.accessToken,
-    id: initianData?._id ?? "",
+    id: initianData?.slug ?? "",
   });
 
   const isPending = isCreating || isUpdating;
@@ -95,6 +96,7 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
     resolver: zodResolver(isEditMode ? blogEditSchema : blogSchema),
     defaultValues: {
       title: initianData?.title ?? "",
+      slug: initianData?.slug ?? "",
       location: initianData?.location ?? "",
       thumbnail: undefined as unknown as File,
       tags: initianData?.tags ?? [],
@@ -102,6 +104,26 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
     },
     mode: "onChange",
   });
+
+  const title = useWatch({
+    control: form.control,
+    name: "title",
+  });
+
+  useEffect(() => {
+    if (!isEditMode) {
+      const generatedSlug = title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+
+      form.setValue("slug", generatedSlug, {
+        shouldValidate: generatedSlug.length >= 3, // ← only validate when valid
+      });
+    }
+  }, [title, isEditMode, form]);
 
   const onSubmit = (data: BlogEditValues) => {
     if (isEditMode) {
