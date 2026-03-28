@@ -37,6 +37,7 @@ import { ThumbnailUploader } from "./thumbnail-uploader";
 
 export const blogSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
+  slug: z.string().min(3, "Slug must be at least 3 characters"),
   location: z.string().min(1, "Please select a location"),
   thumbnail: z.instanceof(File, { message: "Thumbnail is required" }),
   content: z
@@ -132,6 +133,7 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
           tags: data.tags,
           coverImage: data.thumbnail as File,
           isPublished: true,
+          slug: data.slug,
         },
         {
           onSuccess: (res) => {
@@ -185,6 +187,25 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
                 <FormItem className="space-y-1.5">
                   <FormLabel className="text-sm font-medium text-gray-700">
                     Title
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. Joy beach villa blog"
+                      className="h-10 rounded-lg border-gray-200 bg-gray-50 text-sm placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#23A4D2] focus-visible:border-[#23A4D2]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs font-normal" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    Slug
                   </FormLabel>
                   <FormControl>
                     <Input

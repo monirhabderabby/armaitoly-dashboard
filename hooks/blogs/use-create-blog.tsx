@@ -11,6 +11,7 @@ export interface CreateBlogBody {
   tags: string[];
   coverImage: File;
   isPublished?: boolean;
+  slug: string;
 }
 
 export type CreateBlogResponse = {
@@ -46,6 +47,7 @@ export function useCreateBlog({ accessToken }: UseCreateBlogOptions) {
           content: body.content,
           tags: body.tags,
           isPublished: body.isPublished ?? true,
+          slug: body.slug,
         }),
       );
 
