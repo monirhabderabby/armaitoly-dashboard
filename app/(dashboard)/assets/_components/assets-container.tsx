@@ -1,7 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import AlertModal from "@/components/ui/custom/alert-modal";
 import {
   Select,
@@ -14,9 +12,9 @@ import { useDeleteGalleryImage } from "@/hooks/gallery/use-delete-gallery-image"
 import { useGetAllGallery } from "@/hooks/gallery/use-get-all-gallery";
 
 import { useGetRoomIdName } from "@/hooks/gallery/use-get-room-id-name";
-import { ImageIcon, Loader2, Trash2 } from "lucide-react";
-import Image from "next/image";
+import { ImageIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
+import ImageCard from "./image-card";
 import RoomImageUploader from "./room-image-uploader";
 
 const AssetsContainer = () => {
@@ -131,47 +129,17 @@ const AssetsContainer = () => {
             <div className="flex items-start gap-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 flex-1">
                 {selectedRoomImages.map((img) => (
-                  <div
+                  <ImageCard
                     key={img._id}
-                    className="group relative rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white"
-                  >
-                    <div className="relative w-full h-48">
-                      <Image
-                        src={img.url}
-                        alt="Room"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 25vw"
-                      />
-                    </div>
-
-                    <div className="absolute top-2 left-2">
-                      <Badge
-                        variant={img.isActive ? "default" : "secondary"}
-                        className={
-                          img.isActive
-                            ? "bg-emerald-500 hover:bg-emerald-500 text-white text-xs"
-                            : "bg-gray-200 text-gray-600 text-xs"
-                        }
-                      >
-                        {img.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                    </div>
-
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      onClick={() =>
-                        setDeleteTarget({
-                          roomId: String(selectedRoom?.roomId),
-                          imageId: img._id,
-                        })
-                      }
-                      className="absolute top-2 right-2 w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
+                    img={img}
+                    roomId={String(selectedRoom?.roomId)}
+                    onDeleteClick={(imageId) =>
+                      setDeleteTarget({
+                        roomId: String(selectedRoom?.roomId),
+                        imageId,
+                      })
+                    }
+                  />
                 ))}
               </div>
 
