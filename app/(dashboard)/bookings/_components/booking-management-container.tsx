@@ -24,10 +24,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import AlertModal from "@/components/ui/custom/alert-modal";
+import { useDeleteBooking } from "@/hooks/bookings/use-delete-booking";
 import { useGetBookings } from "@/hooks/bookings/use-get-bookings";
 import { Booking } from "@/types/booking";
 import { Session } from "next-auth";
+import dynamic from "next/dynamic";
+import { toast } from "sonner";
 import { getBookingColumns } from "./booking-column";
+const BookingDetailModal = dynamic(() => import("./booking-detail-modal"), {
+  ssr: false,
+});
 
 interface Props {
   user: Session["user"];
@@ -35,7 +42,9 @@ interface Props {
 
 export default function BookingManagementContainer({ user }: Props) {
   const [page, setPage] = useState(1);
-  const limit = 50;
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
+  const limit = 30;
 
   const { data, isLoading, isError } = useGetBookings({
     token: user.accessToken,
@@ -43,19 +52,15 @@ export default function BookingManagementContainer({ user }: Props) {
     limit,
   });
 
+  const { mutate: deleteBooking, isPending: isDeleting } = useDeleteBooking();
+
   const bookings = data?.data ?? [];
   const meta = data?.meta;
   const totalPages = meta?.pages ?? 1;
 
   const columns = getBookingColumns({
-    onView: (booking: Booking) => {
-      console.log("View booking:", booking);
-      // TODO: open detail modal / navigate
-    },
-    onDelete: (booking: Booking) => {
-      console.log("Delete booking:", booking);
-      // TODO: call delete API
-    },
+    onView: (booking: Booking) => setSelectedBookId(booking.bookId),
+    onDelete: (booking: Booking) => setBookingToDelete(booking),
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -64,6 +69,20 @@ export default function BookingManagementContainer({ user }: Props) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const handleConfirmDelete = () => {
+    if (!bookingToDelete) return;
+
+    deleteBooking(bookingToDelete.bookId, {
+      onSuccess: () => {
+        toast.success("Booking deleted successfully.");
+        setBookingToDelete(null);
+      },
+      onError: (err) => {
+        toast.error(err.message ?? "Failed to delete booking.");
+      },
+    });
+  };
 
   /* ── helpers ── */
   const startItem = meta ? (meta.page - 1) * meta.limit + 1 : 0;
@@ -236,6 +255,22 @@ export default function BookingManagementContainer({ user }: Props) {
           </div>
         )}
       </div>
+
+      {selectedBookId && (
+        <BookingDetailModal
+          bookId={selectedBookId}
+          onClose={() => setSelectedBookId(null)}
+        />
+      )}
+
+      <AlertModal
+        isOpen={!!bookingToDelete}
+        onClose={() => setBookingToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        loading={isDeleting}
+        title="Delete Booking?"
+        message={`Are you sure you want to delete booking #${bookingToDelete?.bookId}? This action cannot be undone.`}
+      />
     </div>
   );
 }
