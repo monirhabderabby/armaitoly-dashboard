@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Booking } from "@/types/booking";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Trash2 } from "lucide-react";
+import { Ban, Eye, Trash2 } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
   confirmed: "bg-green-100 text-green-700 border-green-200",
@@ -30,11 +30,13 @@ function StatusBadge({ status }: { status: string }) {
 interface BookingColumnsProps {
   onView?: (booking: Booking) => void;
   onDelete?: (booking: Booking) => void;
+  onCancel?: (booking: Booking) => void; // 👈 added
 }
 
 export function getBookingColumns({
   onView,
   onDelete,
+  onCancel, // 👈 added
 }: BookingColumnsProps = {}): ColumnDef<Booking>[] {
   return [
     {
@@ -108,28 +110,46 @@ export function getBookingColumns({
     {
       id: "action",
       header: "Action",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-cyan-500 hover:text-cyan-700 hover:bg-cyan-50"
-            onClick={() => onView?.(row.original)}
-            aria-label="View booking"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"
-            onClick={() => onDelete?.(row.original)}
-            aria-label="Delete booking"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const isCancelled =
+          row.original.statusLabel?.toLowerCase() === "cancelled" ||
+          row.original.status === "0";
+
+        return (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-cyan-500 hover:text-cyan-700 hover:bg-cyan-50"
+              onClick={() => onView?.(row.original)}
+              aria-label="View booking"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-amber-400 hover:text-amber-600 hover:bg-amber-50 disabled:opacity-30 disabled:cursor-not-allowed"
+              onClick={() => onCancel?.(row.original)}
+              aria-label="Cancel booking"
+              disabled={isCancelled}
+            >
+              <Ban className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"
+              onClick={() => onDelete?.(row.original)}
+              aria-label="Delete booking"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 }

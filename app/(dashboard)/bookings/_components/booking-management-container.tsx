@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 
 import AlertModal from "@/components/ui/custom/alert-modal";
+import { useCancelBooking } from "@/hooks/bookings/use-cancel-booking";
 import { useDeleteBooking } from "@/hooks/bookings/use-delete-booking";
 import { useGetBookings } from "@/hooks/bookings/use-get-bookings";
 import { Booking } from "@/types/booking";
@@ -44,6 +45,7 @@ export default function BookingManagementContainer({ user }: Props) {
   const [page, setPage] = useState(1);
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
+  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
   const limit = 30;
 
   const { data, isLoading, isError } = useGetBookings({
@@ -53,6 +55,7 @@ export default function BookingManagementContainer({ user }: Props) {
   });
 
   const { mutate: deleteBooking, isPending: isDeleting } = useDeleteBooking();
+  const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking();
 
   const bookings = data?.data ?? [];
   const meta = data?.meta;
@@ -61,6 +64,7 @@ export default function BookingManagementContainer({ user }: Props) {
   const columns = getBookingColumns({
     onView: (booking: Booking) => setSelectedBookId(booking.bookId),
     onDelete: (booking: Booking) => setBookingToDelete(booking),
+    onCancel: (booking: Booking) => setBookingToCancel(booking),
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -80,6 +84,20 @@ export default function BookingManagementContainer({ user }: Props) {
       },
       onError: (err) => {
         toast.error(err.message ?? "Failed to delete booking.");
+      },
+    });
+  };
+
+  const handleConfirmCancel = () => {
+    if (!bookingToCancel) return;
+
+    cancelBooking(bookingToCancel.bookId, {
+      onSuccess: () => {
+        toast.success("Booking cancelled successfully.");
+        setBookingToCancel(null);
+      },
+      onError: (err) => {
+        toast.error(err.message ?? "Failed to cancel booking.");
       },
     });
   };
@@ -270,6 +288,15 @@ export default function BookingManagementContainer({ user }: Props) {
         loading={isDeleting}
         title="Delete Booking?"
         message={`Are you sure you want to delete booking #${bookingToDelete?.bookId}? This action cannot be undone.`}
+      />
+
+      <AlertModal
+        isOpen={!!bookingToCancel}
+        onClose={() => setBookingToCancel(null)}
+        onConfirm={handleConfirmCancel}
+        loading={isCancelling}
+        title="Cancel Booking?"
+        message={`Are you sure you want to cancel booking #${bookingToCancel?.bookId}? This action cannot be undone.`}
       />
     </div>
   );
