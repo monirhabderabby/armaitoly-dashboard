@@ -29,7 +29,7 @@ export function useGetAllGallery() {
   return useQuery<GalleryResponse>({
     queryKey: ["all-gallery"],
     queryFn: async () => {
-      const res = await fetch(`${baseUrl}/gallary`, {
+      const res = await fetch(`${baseUrl}/gallary?page=1&limit=25`, {
         method: "GET",
       });
 
