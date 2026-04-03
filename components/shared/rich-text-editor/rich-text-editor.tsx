@@ -58,7 +58,7 @@ const Divider = () => <div className="mx-1 h-5 w-px bg-gray-200" />;
 export function RichTextEditor({
   value,
   onChange,
-  characterLimit = 10000,
+  characterLimit = 20000,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 

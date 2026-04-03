@@ -51,11 +51,11 @@ export const blogSchema = z.object({
   metaTitle: z
     .string()
     .min(3, "Meta title must be at least 3 characters")
-    .max(60, "Meta title should be 60 characters or less"),
+    .max(80, "Meta title should be 80 characters or less"),
   metaDescription: z
     .string()
     .min(10, "Meta description must be at least 10 characters")
-    .max(160, "Meta description should be 160 characters or less"),
+    .max(180, "Meta description should be 180 characters or less"),
 });
 
 export const blogEditSchema = blogSchema.extend({
