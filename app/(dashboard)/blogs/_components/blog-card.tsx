@@ -33,7 +33,7 @@ export function BlogCard({ blog, cu }: Props) {
   const authorName = `${blog.createdBy.firstName} ${blog.createdBy.lastName}`;
 
   const handleDelete = () => {
-    deleteBlog(blog._id, {
+    deleteBlog(blog.slug, {
       onSuccess: () => {
         setOpen(false);
       },
