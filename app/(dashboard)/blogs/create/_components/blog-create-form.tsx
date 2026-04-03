@@ -51,11 +51,11 @@ export const blogSchema = z.object({
   metaTitle: z
     .string()
     .min(3, "Meta title must be at least 3 characters")
-    .max(80, "Meta title should be 80 characters or less"),
+    .max(100, "Meta title should be 100 characters or less"),
   metaDescription: z
     .string()
     .min(10, "Meta description must be at least 10 characters")
-    .max(180, "Meta description should be 180 characters or less"),
+    .max(200, "Meta description should be 200 characters or less"),
 });
 
 export const blogEditSchema = blogSchema.extend({
@@ -67,16 +67,7 @@ export type BlogEditValues = z.infer<typeof blogEditSchema>;
 
 /* ---------------- Locations ---------------- */
 
-const locations = [
-  "Thailand",
-  "Bali, Indonesia",
-  "Maldives",
-  "Phuket",
-  "Koh Samui",
-  "Krabi",
-  "Langkawi, Malaysia",
-  "Boracay, Philippines",
-];
+const locations = ["Thailand", "Koh Phangan"];
 
 /* ---------------- Helpers ---------------- */
 
@@ -443,7 +434,7 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
                       <FormLabel className="text-sm font-medium text-gray-700">
                         Meta Title
                       </FormLabel>
-                      <CharCounter value={field.value} max={60} />
+                      <CharCounter value={field.value} max={100} />
                     </div>
                     <FormControl>
                       <Input
@@ -471,7 +462,7 @@ export default function BlogCreateForm({ cu, initianData }: Props) {
                       <FormLabel className="text-sm font-medium text-gray-700">
                         Meta Description
                       </FormLabel>
-                      <CharCounter value={field.value} max={160} />
+                      <CharCounter value={field.value} max={200} />
                     </div>
                     <FormControl>
                       <textarea
