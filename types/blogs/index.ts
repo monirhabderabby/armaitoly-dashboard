@@ -12,7 +12,7 @@ export interface Blog {
   title: string;
   location: string;
   coverImage?: string;
-  content: string;
+  content?: string;
   tags: string[];
   isPublished: boolean;
   createdBy: BlogAuthor;

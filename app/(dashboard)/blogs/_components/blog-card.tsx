@@ -26,7 +26,7 @@ export function BlogCard({ blog, cu }: Props) {
     accessToken: cu.accessToken,
   });
 
-  const plainText = blog.content.replace(/<[^>]*>/g, "").trim();
+  const plainText = "";
   const excerpt =
     plainText.length > 120 ? plainText.slice(0, 120) + "......." : plainText;
   const formattedDate = format(new Date(blog.createdAt), "dd MMM, yyyy");
