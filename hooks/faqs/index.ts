@@ -29,7 +29,7 @@ export const useFaqs = ({ token }: Props) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/faq`);
+      const res = await fetch(`${baseUrl}/faq?page=1&limit=500`);
       if (!res.ok) throw new Error("Failed to fetch FAQs");
       const data = await res.json();
       // Support both { data: [] } and plain array responses
